@@ -9,7 +9,6 @@ vtkWSLinkClient.setSmartConnectClass(SmartConnect);
 
 const wslink = {
   connect: (context, setClient, setBusy, sessionURL) => {
-    console.log("connect");
 
     // Initiate network connection
     const config = { application: "cone" };
@@ -95,6 +94,51 @@ const wslink = {
       context.client.getRemote().Cone.resetCamera().catch(console.error);
     }
   },
+  applyBonePresetCT: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.applyBonePresetCT().catch(console.error);
+    }
+  },
+  applyAngioPresetCT: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.applyAngioPresetCT().catch(console.error);
+    }
+  },
+  applyMusclePresetCT: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.applyMusclePresetCT().catch(console.error);
+    }
+  },
+  applyMipPresetCT: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.applyMipPresetCT().catch(console.error);
+    }
+  },
+  activeLength: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.activeLength().catch(console.error);
+    }
+  },
+  activeAngle: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.activeAngle().catch(console.error);
+    }
+  },
+  activeCut: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.activeCut().catch(console.error);
+    }
+  },
+  activeCutFreehand: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.activeCutFreehand().catch(console.error);
+    }
+  },
+  activePan: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.activePan().catch(console.error);
+    }
+  }
 };
 
 export default wslink;
