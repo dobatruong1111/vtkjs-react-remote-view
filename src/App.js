@@ -14,6 +14,7 @@ import {
   Slider,
   IconButton,
   LinearProgress,
+  Button,
 } from "@mui/material";
 import { CameraAlt } from "@mui/icons-material";
 import RemoteRenderView from "./RemoteRenderingView";
@@ -29,11 +30,11 @@ function App() {
 
   useEffect(() => {
     console.log("before fetch data");
-    axios.post("http://localhost:8888/ws/rest/v1/session3d/websocketlink",
+    axios.post("http://192.168.1.13:8888/ws/rest/v1/session3d/websocketlink",
       {
-        sessionID: "38ad3379-12bc-49a9-937e-c29cc78e9295",
-        studyUID: "1.3.12.2.1107.5.1.4.66827.30000023041823414870500000493",
-        seriesUID: "1.3.12.2.1107.5.1.4.66827.30000023041823425238300068850"
+        session2D: "5e6395d2-ea80-481d-a593-89e37ddec0e2",
+        studyUID: "2.25.291093576543455631656845608426318550200",
+        seriesUID: "1.3.12.2.1107.5.1.4.96556.30000024032808413061600012199"
       }
     ).then(function (response) {
       let wsURL = response.data?.websocketUrl;
@@ -102,36 +103,16 @@ function App() {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             3D Viewer
           </Typography>
-          <IconButton onClick={applyBonePresetCT}>
-            <CameraAlt />
-          </IconButton>
-          <IconButton onClick={applyAngioPresetCT}>
-            <CameraAlt />
-          </IconButton>
-          <IconButton onClick={applyMusclePresetCT}>
-            <CameraAlt />
-          </IconButton>
-          <IconButton onClick={applyMipPresetCT}>
-            <CameraAlt />
-          </IconButton>
-          <IconButton onClick={activeLength}>
-            <CameraAlt />
-          </IconButton>
-          <IconButton onClick={activeAngle}>
-            <CameraAlt />
-          </IconButton>
-          <IconButton onClick={activeCut}>
-            <CameraAlt />
-          </IconButton>
-          <IconButton onClick={activeCutFreehand}>
-            <CameraAlt />
-          </IconButton>
-          <IconButton onClick={activePan}>
-            <CameraAlt />
-          </IconButton>
-          <IconButton onClick={resetCamera}>
-            <CameraAlt />
-          </IconButton>
+          <Button variant="outlined" onClick={applyBonePresetCT}>Bone</Button>
+          <Button variant="outlined" onClick={applyAngioPresetCT}>Angio</Button>
+          <Button variant="outlined" onClick={applyMusclePresetCT}>Muscle</Button>
+          <Button variant="outlined" onClick={applyMipPresetCT}>Mip</Button>
+          <Button variant="outlined" onClick={activeLength}>Length</Button>
+          <Button variant="outlined" onClick={activeAngle}>Angle</Button>
+          <Button variant="outlined" onClick={activeCut}>Cut</Button>
+          <Button variant="outlined" onClick={activeCutFreehand}>Freehand</Button>
+          <Button variant="outlined" onClick={activePan}>Pan</Button>
+          <Button variant="outlined" onClick={resetCamera}>Reset</Button>
         </Toolbar>
         <LinearProgress sx={{ opacity: !!busy ? 1 : 0 }} />
       </AppBar>
