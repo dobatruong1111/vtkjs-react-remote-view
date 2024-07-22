@@ -30,17 +30,18 @@ function App() {
 
   useEffect(() => {
     console.log("before fetch data");
-    axios.post("http://192.168.1.13:8888/ws/rest/v1/session3d/websocketlink",
+    axios.post("http://27.72.147.196:48888/ws/rest/v1/session3d/websocketlink",
       {
-        session2D: "5e6395d2-ea80-481d-a593-89e37ddec0e2",
-        studyUID: "2.25.291093576543455631656845608426318550200",
-        seriesUID: "1.3.12.2.1107.5.1.4.96556.30000024032808413061600012199"
+        session2D: "32c9476d-ba65-4bff-a688-aac34760bc52",
+        studyUID: "1.2.840.113704.9.1000.16.0.20240527133901371",
+        seriesUID: "1.2.840.113704.9.1000.16.1.2024052713392627100020002"
       }
     ).then(function (response) {
       let wsURL = response.data?.websocketUrl;
       if (wsURL) {
+        let temp = `${wsURL}`;
         console.log("after fetch data");
-        wslink.connect(context.current, setClient, setBusy, wsURL);
+        wslink.connect(context.current, setClient, setBusy, temp);
       }
     }).catch(function (error) {
       console.log("error: ", error);
@@ -55,8 +56,8 @@ function App() {
   //   wslink.updateResolution(context.current, newResolution);
   // };
 
-  const resetCamera = () => {
-    wslink.resetCamera(context.current);
+  const resetViewport = () => {
+    wslink.resetViewport(context.current);
   }
 
   const applyBonePresetCT = () => {
@@ -95,6 +96,10 @@ function App() {
     wslink.activePan(context.current);
   }
 
+  const activeRotate = () => {
+    wslink.activeRotate(context.current);
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="inherit">
@@ -103,6 +108,7 @@ function App() {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             3D Viewer
           </Typography>
+          <Button variant="outlined" onClick={activeRotate}>Rotate</Button>
           <Button variant="outlined" onClick={applyBonePresetCT}>Bone</Button>
           <Button variant="outlined" onClick={applyAngioPresetCT}>Angio</Button>
           <Button variant="outlined" onClick={applyMusclePresetCT}>Muscle</Button>
@@ -112,7 +118,7 @@ function App() {
           <Button variant="outlined" onClick={activeCut}>Cut</Button>
           <Button variant="outlined" onClick={activeCutFreehand}>Freehand</Button>
           <Button variant="outlined" onClick={activePan}>Pan</Button>
-          <Button variant="outlined" onClick={resetCamera}>Reset</Button>
+          <Button variant="outlined" onClick={resetViewport}>Reset</Button>
         </Toolbar>
         <LinearProgress sx={{ opacity: !!busy ? 1 : 0 }} />
       </AppBar>

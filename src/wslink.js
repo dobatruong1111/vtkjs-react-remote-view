@@ -89,9 +89,9 @@ const wslink = {
         .catch(console.error);
     }
   },
-  resetCamera: (context) => {
+  resetViewport: (context) => {
     if (context.client) {
-      context.client.getRemote().Cone.resetCamera().catch(console.error);
+      context.client.getRemote().Cone.resetViewport().catch(console.error);
     }
   },
   applyBonePresetCT: (context) => {
@@ -137,6 +137,11 @@ const wslink = {
   activePan: (context) => {
     if (context.client) {
       context.client.getRemote().Cone.activePan().catch(console.error);
+    }
+  },
+  activeRotate: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.activeRotate().catch(console.error);
     }
   }
 };
