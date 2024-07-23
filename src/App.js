@@ -30,16 +30,16 @@ function App() {
 
   useEffect(() => {
     console.log("before fetch data");
-    axios.post("http://27.72.147.196:48888/ws/rest/v1/session3d/websocketlink",
+    axios.post("http://192.168.1.13:9000/ws/rest/v1/session3d/websocketlink",
       {
-        session2D: "32c9476d-ba65-4bff-a688-aac34760bc52",
+        session2D: "f1e4be6d-abde-4df3-8776-d57e5abe9626",
         studyUID: "1.2.840.113704.9.1000.16.0.20240527133901371",
         seriesUID: "1.2.840.113704.9.1000.16.1.2024052713392627100020002"
       }
     ).then(function (response) {
       let wsURL = response.data?.websocketUrl;
       if (wsURL) {
-        let temp = `${wsURL}`;
+        let temp = `ws://192.168.1.13:9000${wsURL}`;
         console.log("after fetch data");
         wslink.connect(context.current, setClient, setBusy, temp);
       }
@@ -55,6 +55,10 @@ function App() {
   //   setResolution(newResolution);
   //   wslink.updateResolution(context.current, newResolution);
   // };
+
+  const applyPresetCT = () => {
+    wslink.applyCTAAAPreset(context.current);
+  }
 
   const resetViewport = () => {
     wslink.resetViewport(context.current);
@@ -109,7 +113,7 @@ function App() {
             3D Viewer
           </Typography>
           <Button variant="outlined" onClick={activeRotate}>Rotate</Button>
-          <Button variant="outlined" onClick={applyBonePresetCT}>Bone</Button>
+          <Button variant="outlined" onClick={applyPresetCT}>Preset</Button>
           <Button variant="outlined" onClick={applyAngioPresetCT}>Angio</Button>
           <Button variant="outlined" onClick={applyMusclePresetCT}>Muscle</Button>
           <Button variant="outlined" onClick={applyMipPresetCT}>Mip</Button>

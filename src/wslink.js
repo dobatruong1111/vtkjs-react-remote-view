@@ -94,6 +94,11 @@ const wslink = {
       context.client.getRemote().Cone.resetViewport().catch(console.error);
     }
   },
+  applyCTAAAPreset: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.applyCTAAAPrest().catch(console.error);
+    }
+  },
   applyBonePresetCT: (context) => {
     if (context.client) {
       context.client.getRemote().Cone.applyBonePresetCT().catch(console.error);
