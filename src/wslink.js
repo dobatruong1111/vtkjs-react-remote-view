@@ -94,29 +94,9 @@ const wslink = {
       context.client.getRemote().Cone.resetViewport().catch(console.error);
     }
   },
-  applyCTAAAPreset: (context) => {
+  applyPreset: (context) => {
     if (context.client) {
-      context.client.getRemote().Cone.applyCTAAAPrest().catch(console.error);
-    }
-  },
-  applyBonePresetCT: (context) => {
-    if (context.client) {
-      context.client.getRemote().Cone.applyBonePresetCT().catch(console.error);
-    }
-  },
-  applyAngioPresetCT: (context) => {
-    if (context.client) {
-      context.client.getRemote().Cone.applyAngioPresetCT().catch(console.error);
-    }
-  },
-  applyMusclePresetCT: (context) => {
-    if (context.client) {
-      context.client.getRemote().Cone.applyMusclePresetCT().catch(console.error);
-    }
-  },
-  applyMipPresetCT: (context) => {
-    if (context.client) {
-      context.client.getRemote().Cone.applyMipPresetCT().catch(console.error);
+      context.client.getRemote().Cone.applyPreset().catch(console.error);
     }
   },
   activeLength: (context) => {

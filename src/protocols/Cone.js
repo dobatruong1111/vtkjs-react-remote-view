@@ -3,11 +3,7 @@ export default function createMethods(session) {
   return {
     createVisualization: () => session.call('volume.initialize', []),
     activeRotate: () => session.call('volume.rotate', []),
-    applyCTAAAPrest: () => session.call('volume.aaa.preset.ct', []),
-    applyBonePresetCT: () => session.call('volume.bone.preset.ct', []),
-    applyAngioPresetCT: () => session.call('volume.angio.preset.ct', []),
-    applyMusclePresetCT: () => session.call('volume.muscle.preset.ct', []),
-    applyMipPresetCT: () => session.call('volume.mip.preset.ct', []),
+    applyPreset: () => session.call('volume.preset', ["CT-Cardiac"]),
     activeLength: () => session.call('volume.length', []),
     activeAngle: () => session.call('volume.angle', []),
     activeCut: () => session.call('volume.cut', []),

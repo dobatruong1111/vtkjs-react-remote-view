@@ -32,7 +32,7 @@ function App() {
     console.log("before fetch data");
     axios.post("http://192.168.1.13:9000/ws/rest/v1/session3d/websocketlink",
       {
-        session2D: "f1e4be6d-abde-4df3-8776-d57e5abe9626",
+        session2D: "874ee644-d16b-4c43-8cbe-3e95ce7d9f8d",
         studyUID: "1.2.840.113704.9.1000.16.0.20240527133901371",
         seriesUID: "1.2.840.113704.9.1000.16.1.2024052713392627100020002"
       }
@@ -56,28 +56,12 @@ function App() {
   //   wslink.updateResolution(context.current, newResolution);
   // };
 
-  const applyPresetCT = () => {
-    wslink.applyCTAAAPreset(context.current);
+  const applyPreset = () => {
+    wslink.applyPreset(context.current);
   }
 
   const resetViewport = () => {
     wslink.resetViewport(context.current);
-  }
-
-  const applyBonePresetCT = () => {
-    wslink.applyBonePresetCT(context.current);
-  }
-
-  const applyAngioPresetCT = () => {
-    wslink.applyAngioPresetCT(context.current);
-  }
-
-  const applyMusclePresetCT = () => {
-    wslink.applyMusclePresetCT(context.current);
-  }
-
-  const applyMipPresetCT = () => {
-    wslink.applyMipPresetCT(context.current);
   }
 
   const activeLength = () => {
@@ -113,10 +97,7 @@ function App() {
             3D Viewer
           </Typography>
           <Button variant="outlined" onClick={activeRotate}>Rotate</Button>
-          <Button variant="outlined" onClick={applyPresetCT}>Preset</Button>
-          <Button variant="outlined" onClick={applyAngioPresetCT}>Angio</Button>
-          <Button variant="outlined" onClick={applyMusclePresetCT}>Muscle</Button>
-          <Button variant="outlined" onClick={applyMipPresetCT}>Mip</Button>
+          <Button variant="outlined" onClick={applyPreset}>Preset</Button>
           <Button variant="outlined" onClick={activeLength}>Length</Button>
           <Button variant="outlined" onClick={activeAngle}>Angle</Button>
           <Button variant="outlined" onClick={activeCut}>Cut</Button>
