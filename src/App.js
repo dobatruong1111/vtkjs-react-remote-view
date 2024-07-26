@@ -29,26 +29,26 @@ function App() {
   console.log("re-render");
 
   useEffect(() => {
-    console.log("before fetch data");
-    axios.post("http://192.168.1.13:9000/ws/rest/v1/session3d/websocketlink",
-      {
-        session2D: "874ee644-d16b-4c43-8cbe-3e95ce7d9f8d",
-        studyUID: "1.2.840.113704.9.1000.16.0.20240527133901371",
-        seriesUID: "1.2.840.113704.9.1000.16.1.2024052713392627100020002"
-      }
-    ).then(function (response) {
-      let wsURL = response.data?.websocketUrl;
-      if (wsURL) {
-        let temp = `ws://192.168.1.13:9000${wsURL}`;
-        console.log("after fetch data");
-        wslink.connect(context.current, setClient, setBusy, temp);
-      }
-    }).catch(function (error) {
-      console.log("error: ", error);
-    })
+    // console.log("before fetch data");
+    // axios.post("http://192.168.1.13:9000/ws/rest/v1/session3d/websocketlink",
+    //   {
+    //     session2D: "874ee644-d16b-4c43-8cbe-3e95ce7d9f8d",
+    //     studyUID: "1.2.840.113704.9.1000.16.0.20240527133901371",
+    //     seriesUID: "1.2.840.113704.9.1000.16.1.2024052713392627100020002"
+    //   }
+    // ).then(function (response) {
+    //   let wsURL = response.data?.websocketUrl;
+    //   if (wsURL) {
+    //     let temp = `ws://192.168.1.13:9000${wsURL}`;
+    //     console.log("after fetch data");
+    //     wslink.connect(context.current, setClient, setBusy, temp);
+    //   }
+    // }).catch(function (error) {
+    //   console.log("error: ", error);
+    // })
 
-    // const wsURL = "ws://localhost:1234/ws";
-    // wslink.connect(context.current, setClient, setBusy, wsURL);
+    const wsURL = "ws://localhost:1234/ws";
+    wslink.connect(context.current, setClient, setBusy, wsURL);
   }, []);
 
   // const updateResolution = (_event, newResolution) => {
@@ -109,8 +109,19 @@ function App() {
       </AppBar>
 
       <Box className="appContent">
-        <div style={{ position: "relative", width: "100%", height: "100%" }}>
-          <RemoteRenderView client={client} />
+        <div className="views">
+          <div style={{ position: "relative", width: "300px", height: "300px" }}>
+            <RemoteRenderView client={client} viewId="1" />
+          </div>
+          <div style={{ position: "relative", width: "300px", height: "300px" }}>
+            <RemoteRenderView client={client} viewId="2" />
+          </div>
+          <div style={{ position: "relative", width: "300px", height: "300px" }}>
+            <RemoteRenderView client={client} viewId="3" />
+          </div>
+          <div style={{ position: "relative", width: "300px", height: "300px" }}>
+            <RemoteRenderView client={client} viewId="4" />
+          </div>
         </div>
       </Box>
     </Box>
