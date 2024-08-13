@@ -72,11 +72,35 @@ const wslink = {
         console.error(error);
       });
   },
+  delete: (context) => {
+    if (context.client) {
+      context.client
+        .getRemote()
+        .Cone.delete()
+        .catch(console.error);
+    }
+  },
+  shading: (context) => {
+    if (context.client) {
+      context.client
+        .getRemote()
+        .Cone.shading()
+        .catch(console.error);
+    }
+  },
   initializeServer: (context) => {
     if (context.client) {
       context.client
         .getRemote()
         .Cone.createVisualization()
+        .catch(console.error);
+    }
+  },
+  reinitializeServer: (context) => {
+    if (context.client) {
+      context.client
+        .getRemote()
+        .Cone.createNewVisualization()
         .catch(console.error);
     }
   },
@@ -94,9 +118,9 @@ const wslink = {
       context.client.getRemote().Cone.resetViewport().catch(console.error);
     }
   },
-  applyPreset: (context) => {
+  applyPreset: (context, name) => {
     if (context.client) {
-      context.client.getRemote().Cone.applyPreset().catch(console.error);
+      context.client.getRemote().Cone.applyPreset(name).catch(console.error);
     }
   },
   activeLength: (context) => {
@@ -127,6 +151,11 @@ const wslink = {
   activeRotate: (context) => {
     if (context.client) {
       context.client.getRemote().Cone.activeRotate().catch(console.error);
+    }
+  },
+  rotateDirection: (context, direction) => {
+    if (context.client) {
+      context.client.getRemote().Cone.rotateDirection(direction).catch(console.error);
     }
   }
 };

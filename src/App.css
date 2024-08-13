@@ -46,7 +46,8 @@
   /* need a fixed height of arbitrary value
    * so the vtk viewers don't grow too much in
    * height when resizing. */
-  height: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .views {

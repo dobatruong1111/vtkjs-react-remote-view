@@ -16,7 +16,9 @@ class Viewer(vtk_protocols.vtkWebProtocol):
     def __init__(self):
         self.dicomDirPath = "D:/javaworkspace/viewer-core/server3d/data/1.2.840.113704.9.1000.16.0.20240527133901371/1.2.840.113704.9.1000.16.1.2024052713392627100020002/data"
         self.colors = vtk.vtkNamedColors()
+        self.reader = vtk.vtkDICOMImageReader()
 
+        self.volumeInitialize()
         self.initialize()
 
         self.initCenterlineAxialView()
@@ -31,8 +33,31 @@ class Viewer(vtk_protocols.vtkWebProtocol):
         self.currentSphereWidgetCenter = None
         self.currentSphereWidgetCenterRotateLinesAxial = None
 
+    def volumeInitialize(self) -> None:
+        # 3D view
+        self.mapper = vtk.vtkSmartVolumeMapper()
+        self.volumeProperty = vtk.vtkVolumeProperty()
+        self.volume = vtk.vtkVolume()
+        # Transfer function
+        self.scalarColorTransferFunction = vtk.vtkColorTransferFunction()
+        self.scalarOpacity = vtk.vtkPiecewiseFunction()
+        self.gradientOpacity = vtk.vtkPiecewiseFunction()
+
+    def createVolumeVisualization(self, imageData: vtk.vtkImageData) -> None:
+        self.mapper.SetInputData(imageData)
+        self.volumeProperty.SetInterpolationTypeToLinear()
+        self.volumeProperty.SetScalarOpacityUnitDistance(0.1)
+        self.volumeProperty.SetColor(self.scalarColorTransferFunction)
+        self.volumeProperty.SetScalarOpacity(self.scalarOpacity)
+        self.volumeProperty.SetGradientOpacity(self.gradientOpacity)
+        self.apply3DPreset()
+        self.volume.SetMapper(self.mapper)
+        self.volume.SetProperty(self.volumeProperty)
+        renderWindow = self.getApplication().GetObjectIdMap().GetActiveObject("3D_VIEW")
+        renderer = renderWindow.GetRenderers().GetFirstRenderer()
+        renderer.AddVolume(self.volume)
+
     def initialize(self) -> None:
-        self.reader = vtk.vtkDICOMImageReader()
         self.axial = vtk.vtkMatrix4x4()
         self.coronal = vtk.vtkMatrix4x4()
         self.sagittal = vtk.vtkMatrix4x4()
@@ -62,15 +87,6 @@ class Viewer(vtk_protocols.vtkWebProtocol):
             -math.sin(math.radians(0)), 0, math.cos(math.radians(0)), 0, 
             0, 0, 0, 1)
         )
-
-        # 3D view
-        self.mapper = vtk.vtkSmartVolumeMapper()
-        self.volumeProperty = vtk.vtkVolumeProperty()
-        self.volume = vtk.vtkVolume()
-        # Transfer function
-        self.scalarColorTransferFunction = vtk.vtkColorTransferFunction()
-        self.scalarOpacity = vtk.vtkPiecewiseFunction()
-        self.gradientOpacity = vtk.vtkPiecewiseFunction()
 
     def initCenterlineAxialView(self) -> None:
         greenLineAxial = vtk.vtkLineSource()
@@ -279,18 +295,7 @@ class Viewer(vtk_protocols.vtkWebProtocol):
         center = imageData.GetCenter()
         (xMin, xMax, yMin, yMax, zMin, zMax) = imageData.GetBounds()
 
-        # 3D
-        self.mapper.SetInputData(imageData)
-        self.volumeProperty.SetInterpolationTypeToLinear()
-        self.volumeProperty.SetScalarOpacityUnitDistance(0.1)
-        self.volumeProperty.SetColor(self.scalarColorTransferFunction)
-        self.volumeProperty.SetScalarOpacity(self.scalarOpacity)
-        self.volumeProperty.SetGradientOpacity(self.gradientOpacity)
-        self.apply3DPreset()
-        self.volume.SetMapper(self.mapper)
-        self.volume.SetProperty(self.volumeProperty)
-        renderer = renderWindow.GetRenderers().GetFirstRenderer()
-        renderer.AddVolume(self.volume)
+        self.createVolumeVisualization(imageData)
 
         self.sphereWidgetAxial.SetInteractor(renderWindowAxial.GetInteractor())
         # self.sphereWidgetInteractionRotateGreenLineAxial.SetInteractor(renderWindowAxial.GetInteractor())
@@ -590,12 +595,12 @@ class Viewer(vtk_protocols.vtkWebProtocol):
         renderWindowSagittal.Render()
         renderWindow.Render()
 
-        self.getApplication().InvalidateCache(renderWindowAxial)
-        self.getApplication().InvalidateCache(renderWindowCoronal)
-        self.getApplication().InvalidateCache(renderWindowSagittal)
-        self.getApplication().InvalidateCache(renderWindow)
+        # self.getApplication().InvalidateCache(renderWindowAxial)
+        # self.getApplication().InvalidateCache(renderWindowCoronal)
+        # self.getApplication().InvalidateCache(renderWindowSagittal)
+        # self.getApplication().InvalidateCache(renderWindow)
 
-        self.getApplication().InvokeEvent(vtkCommand.UpdateEvent)
+        # self.getApplication().InvokeEvent(vtkCommand.UpdateEvent)
 
     @exportRpc("viewport.mouse.zoom.wheel")
     def updateZoomFromWheel(self, event):

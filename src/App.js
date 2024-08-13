@@ -30,16 +30,16 @@ function App() {
 
   useEffect(() => {
     // console.log("before fetch data");
-    // axios.post("http://192.168.1.13:9000/ws/rest/v1/session3d/websocketlink",
+    // axios.post("https://viewer.saolasoft.vn/ws/rest/v1/session3d/websocketlink",
     //   {
-    //     session2D: "874ee644-d16b-4c43-8cbe-3e95ce7d9f8d",
-    //     studyUID: "1.2.840.113704.9.1000.16.0.20240527133901371",
-    //     seriesUID: "1.2.840.113704.9.1000.16.1.2024052713392627100020002"
+    //     session2D: "a2ee9bfa-e820-40ef-8630-bfe5fd730829",
+    //     studyUID: "1.2.840.113619.2.415.3.2831155460.530.1721039812.497",
+    //     seriesUID: "1.2.840.113619.2.415.3.2831155460.530.1721039812.503.4"
     //   }
     // ).then(function (response) {
     //   let wsURL = response.data?.websocketUrl;
     //   if (wsURL) {
-    //     let temp = `ws://192.168.1.13:9000${wsURL}`;
+    //     let temp = `wss://viewer.saolasoft.vn${wsURL}`;
     //     console.log("after fetch data");
     //     wslink.connect(context.current, setClient, setBusy, temp);
     //   }
@@ -56,8 +56,24 @@ function App() {
   //   wslink.updateResolution(context.current, newResolution);
   // };
 
-  const applyPreset = () => {
-    wslink.applyPreset(context.current);
+  const rotateDirection = (direction) => {
+    wslink.rotateDirection(context.current, direction)
+  }
+
+  const deleteAll = () => {
+    wslink.delete(context.current);
+  }
+
+  const shading = () => {
+    wslink.shading(context.current);
+  }
+
+  const reinitializeServer = () => {
+    wslink.reinitializeServer(context.current);
+  }
+
+  const applyPreset = (name) => {
+    wslink.applyPreset(context.current, name);
   }
 
   const resetViewport = () => {
@@ -96,24 +112,35 @@ function App() {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             3D Viewer
           </Typography>
-          <Button variant="outlined" onClick={activeRotate}>Rotate</Button>
-          <Button variant="outlined" onClick={applyPreset}>Preset</Button>
+          <Button variant="outlined" onClick={reinitializeServer}>Re-Init</Button>
+          {/* <Button variant="outlined" onClick={activeRotate}>Rotate</Button> */}
+          {/* <Button variant="outlined" onClick={() => rotateDirection("ANTERIOR")}>A</Button>
+          <Button variant="outlined" onClick={() => rotateDirection("POSTERIOR")}>P</Button>
+          <Button variant="outlined" onClick={() => rotateDirection("LEFT")}>L</Button>
+          <Button variant="outlined" onClick={() => rotateDirection("RIGHT")}>R</Button>
+          <Button variant="outlined" onClick={() => rotateDirection("SUPERIOR")}>S</Button>
+          <Button variant="outlined" onClick={() => rotateDirection("INFERIOR")}>I</Button> */}
+          <Button variant="outlined" onClick={() => applyPreset("CT-AAA")}>CT-AAA</Button>
+          <Button variant="outlined" onClick={() => applyPreset("Standard")}>Standard</Button>
+          <Button variant="outlined" onClick={() => applyPreset("Soft + Skin")}>Soft + Skin</Button>
           <Button variant="outlined" onClick={activeLength}>Length</Button>
           <Button variant="outlined" onClick={activeAngle}>Angle</Button>
-          <Button variant="outlined" onClick={activeCut}>Cut</Button>
+          <Button variant="outlined" onClick={deleteAll}>delete</Button>
+          {/* <Button variant="outlined" onClick={activeCut}>Cut</Button> */}
           <Button variant="outlined" onClick={activeCutFreehand}>Freehand</Button>
           <Button variant="outlined" onClick={activePan}>Pan</Button>
           <Button variant="outlined" onClick={resetViewport}>Reset</Button>
+          {/* <Button variant="outlined" onClick={shading}>Shading</Button> */}
         </Toolbar>
         <LinearProgress sx={{ opacity: !!busy ? 1 : 0 }} />
       </AppBar>
 
       <Box className="appContent">
         <div className="views">
-          <div style={{ position: "relative", width: "300px", height: "300px" }}>
+          <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
             <RemoteRenderView client={client} viewId="1" />
           </div>
-          <div style={{ position: "relative", width: "300px", height: "300px" }}>
+          {/* <div style={{ position: "relative", width: "300px", height: "300px" }}>
             <RemoteRenderView client={client} viewId="2" />
           </div>
           <div style={{ position: "relative", width: "300px", height: "300px" }}>
@@ -121,7 +148,7 @@ function App() {
           </div>
           <div style={{ position: "relative", width: "300px", height: "300px" }}>
             <RemoteRenderView client={client} viewId="4" />
-          </div>
+          </div> */}
         </div>
       </Box>
     </Box>
