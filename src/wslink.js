@@ -96,11 +96,11 @@ const wslink = {
         .catch(console.error);
     }
   },
-  reinitializeServer: (context) => {
+  reinitializeServer: (context, seriesUID) => {
     if (context.client) {
       context.client
         .getRemote()
-        .Cone.createNewVisualization()
+        .Cone.createNewVisualization(seriesUID)
         .catch(console.error);
     }
   },
@@ -121,6 +121,11 @@ const wslink = {
   applyPreset: (context, name) => {
     if (context.client) {
       context.client.getRemote().Cone.applyPreset(name).catch(console.error);
+    }
+  },
+  shift: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.shift().catch(console.error);
     }
   },
   activeLength: (context) => {

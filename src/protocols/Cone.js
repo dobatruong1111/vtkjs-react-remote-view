@@ -3,7 +3,7 @@ export default function createMethods(session) {
   return {
     createVisualization: () => session.call('volume.initialize', []),
     shading: () => session.call('volume.shade', []),
-    createNewVisualization: () => session.call('volume.create', ["1.2.840.113619.2.415.3.2831155460.530.1721039812.503.3"]),
+    createNewVisualization: (seriesUID) => session.call('volume.create', [seriesUID]),
     activeRotate: () => session.call('volume.rotate', []),
     rotateDirection: (direction) => session.call('volume.view.plane', [direction]),
     applyPreset: (name) => session.call('volume.preset', [name]),
@@ -16,5 +16,6 @@ export default function createMethods(session) {
     resetViewport: () => session.call('volume.reset', []),
     updateResolution: (resolution) =>
       session.call('vtk.cone.resolution.update', [resolution]),
+    shift: () => session.call('volume.shift', [])
   };
 }

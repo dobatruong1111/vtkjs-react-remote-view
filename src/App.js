@@ -32,9 +32,9 @@ function App() {
     // console.log("before fetch data");
     // axios.post("https://viewer.saolasoft.vn/ws/rest/v1/session3d/websocketlink",
     //   {
-    //     session2D: "a2ee9bfa-e820-40ef-8630-bfe5fd730829",
+    //     session2D: "1475c1a9-cac3-42f1-b96f-a62e9aa9ad11",
     //     studyUID: "1.2.840.113619.2.415.3.2831155460.530.1721039812.497",
-    //     seriesUID: "1.2.840.113619.2.415.3.2831155460.530.1721039812.503.4"
+    //     seriesUID: "1.2.840.113619.2.415.3.2831155460.530.1721039812.503.3"
     //   }
     // ).then(function (response) {
     //   let wsURL = response.data?.websocketUrl;
@@ -68,8 +68,8 @@ function App() {
     wslink.shading(context.current);
   }
 
-  const reinitializeServer = () => {
-    wslink.reinitializeServer(context.current);
+  const reinitializeServer = (seriesUID) => {
+    wslink.reinitializeServer(context.current, seriesUID);
   }
 
   const applyPreset = (name) => {
@@ -104,6 +104,10 @@ function App() {
     wslink.activeRotate(context.current);
   }
 
+  const shift = () => {
+    wslink.shift(context.current);
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="inherit">
@@ -112,8 +116,9 @@ function App() {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             3D Viewer
           </Typography>
-          <Button variant="outlined" onClick={reinitializeServer}>Re-Init</Button>
-          {/* <Button variant="outlined" onClick={activeRotate}>Rotate</Button> */}
+          {/* <Button variant="outlined" onClick={() => reinitializeServer("1.2.840.113619.2.415.3.2831155460.530.1721039812.503")}>Create</Button> */}
+          <Button variant="outlined" onClick={shift}>Shift</Button>
+          <Button variant="outlined" onClick={activeRotate}>Rotate</Button>
           {/* <Button variant="outlined" onClick={() => rotateDirection("ANTERIOR")}>A</Button>
           <Button variant="outlined" onClick={() => rotateDirection("POSTERIOR")}>P</Button>
           <Button variant="outlined" onClick={() => rotateDirection("LEFT")}>L</Button>
@@ -121,12 +126,15 @@ function App() {
           <Button variant="outlined" onClick={() => rotateDirection("SUPERIOR")}>S</Button>
           <Button variant="outlined" onClick={() => rotateDirection("INFERIOR")}>I</Button> */}
           <Button variant="outlined" onClick={() => applyPreset("CT-AAA")}>CT-AAA</Button>
-          <Button variant="outlined" onClick={() => applyPreset("Standard")}>Standard</Button>
-          <Button variant="outlined" onClick={() => applyPreset("Soft + Skin")}>Soft + Skin</Button>
-          <Button variant="outlined" onClick={activeLength}>Length</Button>
-          <Button variant="outlined" onClick={activeAngle}>Angle</Button>
-          <Button variant="outlined" onClick={deleteAll}>delete</Button>
-          {/* <Button variant="outlined" onClick={activeCut}>Cut</Button> */}
+          <Button variant="outlined" onClick={() => applyPreset("CT-Cardiac")}>CT-Cardiac</Button>
+          <Button variant="outlined" onClick={() => applyPreset("CT-Bone")}>CT-Bone</Button>
+          <Button variant="outlined" onClick={() => applyPreset("CT-Chest-Vessels")}>CT-Chest-Vessels</Button>
+          {/* <Button variant="outlined" onClick={() => applyPreset("Standard")}>I-Standard</Button> */}
+          {/* <Button variant="outlined" onClick={() => applyPreset("Soft + Skin")}>Soft + Skin</Button> */}
+          {/* <Button variant="outlined" onClick={activeLength}>Length</Button> */}
+          {/* <Button variant="outlined" onClick={activeAngle}>Angle</Button> */}
+          {/* <Button variant="outlined" onClick={deleteAll}>delete</Button> */}
+          <Button variant="outlined" onClick={activeCut}>Cut</Button>
           <Button variant="outlined" onClick={activeCutFreehand}>Freehand</Button>
           <Button variant="outlined" onClick={activePan}>Pan</Button>
           <Button variant="outlined" onClick={resetViewport}>Reset</Button>
