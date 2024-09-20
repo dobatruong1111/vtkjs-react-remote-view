@@ -148,6 +148,11 @@ const wslink = {
       context.client.getRemote().Cone.activeCutFreehand().catch(console.error);
     }
   },
+  removeBed: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.removeBed().catch(console.error);
+    }
+  },
   activePan: (context) => {
     if (context.client) {
       context.client.getRemote().Cone.activePan().catch(console.error);

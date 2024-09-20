@@ -12,6 +12,7 @@ export default function createMethods(session) {
     delete: () => session.call('volume.delete', []),
     activeCut: () => session.call('volume.crop', []),
     activeCutFreehand: () => session.call('volume.crop.freehand', ["INSIDE"]),
+    removeBed: () => session.call('volume.remove.bed'),
     activePan: () => session.call('volume.pan', []),
     resetViewport: () => session.call('volume.reset', []),
     updateResolution: (resolution) =>

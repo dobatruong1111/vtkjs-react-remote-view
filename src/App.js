@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import wslink from "./wslink";
 
@@ -96,6 +96,10 @@ function App() {
     wslink.activeCutFreehand(context.current);
   }
 
+  const removeBed = () => {
+    wslink.removeBed(context.current);
+  }
+
   const activePan = () => {
     wslink.activePan(context.current);
   }
@@ -116,7 +120,7 @@ function App() {
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             3D Viewer
           </Typography>
-          {/* <Button variant="outlined" onClick={() => reinitializeServer("1.2.840.113619.2.415.3.2831155460.530.1721039812.503")}>Create</Button> */}
+          <Button variant="outlined" onClick={() => reinitializeServer("1.3.12.2.1107.5.1.4.66827.30000023042000381772900030436")}>Create</Button>
           <Button variant="outlined" onClick={shift}>Shift</Button>
           <Button variant="outlined" onClick={activeRotate}>Rotate</Button>
           {/* <Button variant="outlined" onClick={() => rotateDirection("ANTERIOR")}>A</Button>
@@ -127,18 +131,19 @@ function App() {
           <Button variant="outlined" onClick={() => rotateDirection("INFERIOR")}>I</Button> */}
           <Button variant="outlined" onClick={() => applyPreset("CT-AAA")}>CT-AAA</Button>
           <Button variant="outlined" onClick={() => applyPreset("CT-Cardiac")}>CT-Cardiac</Button>
-          <Button variant="outlined" onClick={() => applyPreset("CT-Bone")}>CT-Bone</Button>
-          <Button variant="outlined" onClick={() => applyPreset("CT-Chest-Vessels")}>CT-Chest-Vessels</Button>
-          {/* <Button variant="outlined" onClick={() => applyPreset("Standard")}>I-Standard</Button> */}
+          {/* <Button variant="outlined" onClick={() => applyPreset("CT-Bone")}>CT-Bone</Button> */}
+          {/* <Button variant="outlined" onClick={() => applyPreset("CT-Chest-Vessels")}>CT-Chest-Vessels</Button> */}
+          <Button variant="outlined" onClick={() => applyPreset("Standard")}>Standard</Button>
           {/* <Button variant="outlined" onClick={() => applyPreset("Soft + Skin")}>Soft + Skin</Button> */}
-          {/* <Button variant="outlined" onClick={activeLength}>Length</Button> */}
-          {/* <Button variant="outlined" onClick={activeAngle}>Angle</Button> */}
-          {/* <Button variant="outlined" onClick={deleteAll}>delete</Button> */}
-          <Button variant="outlined" onClick={activeCut}>Cut</Button>
+          <Button variant="outlined" onClick={activeLength}>Length</Button>
+          <Button variant="outlined" onClick={activeAngle}>Angle</Button>
+          <Button variant="outlined" onClick={deleteAll}>delete</Button>
+          <Button variant="outlined" onClick={activeCut}>Crop</Button>
           <Button variant="outlined" onClick={activeCutFreehand}>Freehand</Button>
+          <Button variant="outlined" onClick={removeBed}>Bed</Button>
           <Button variant="outlined" onClick={activePan}>Pan</Button>
           <Button variant="outlined" onClick={resetViewport}>Reset</Button>
-          {/* <Button variant="outlined" onClick={shading}>Shading</Button> */}
+          <Button variant="outlined" onClick={shading}>Shading</Button>
         </Toolbar>
         <LinearProgress sx={{ opacity: !!busy ? 1 : 0 }} />
       </AppBar>
