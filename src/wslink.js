@@ -7,6 +7,8 @@ import { connectImageStream } from "vtk.js/Sources/Rendering/Misc/RemoteView";
 
 vtkWSLinkClient.setSmartConnectClass(SmartConnect);
 
+const TOPIC = "wslink.channel";
+
 const wslink = {
   connect: (context, setClient, setBusy, sessionURL) => {
 
@@ -26,7 +28,7 @@ const wslink = {
       clientToConnect = vtkWSLinkClient.newInstance({ protocols });
     }
 
-    // // Connect to busy store
+    // Connect to busy store
     clientToConnect.onBusyChange((busy) => {
       setBusy(busy);
     });
@@ -61,16 +63,21 @@ const wslink = {
 
         // Now that the client is ready let's setup the server for us
         if (context.client) {
-          console.log(context.client);
-          context.client
-            .getRemote()
-            .Cone.createVisualization()
-            .catch(console.error);
+          // console.log(context.client);
+          context.client.getRemote().Cone.createVisualization().catch(console.error);
         }
       })
       .catch((error) => {
         console.error(error);
       });
+  },
+  createVolume: (context) => {
+    if (context.client) {
+      context.client
+        .getRemote()
+        .Cone.createVisualization()
+        .catch(console.error);
+    }
   },
   delete: (context) => {
     if (context.client) {
@@ -96,11 +103,11 @@ const wslink = {
         .catch(console.error);
     }
   },
-  reinitializeServer: (context, seriesUID) => {
+  reinitializeServer: (context) => {
     if (context.client) {
       context.client
         .getRemote()
-        .Cone.createNewVisualization(seriesUID)
+        .Cone.createNewVisualization()
         .catch(console.error);
     }
   },
@@ -158,6 +165,11 @@ const wslink = {
       context.client.getRemote().Cone.activePan().catch(console.error);
     }
   },
+  activeZoom: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.activeZoom().catch(console.error);
+    }
+  },
   activeRotate: (context) => {
     if (context.client) {
       context.client.getRemote().Cone.activeRotate().catch(console.error);
@@ -166,6 +178,66 @@ const wslink = {
   rotateDirection: (context, direction) => {
     if (context.client) {
       context.client.getRemote().Cone.rotateDirection(direction).catch(console.error);
+    }
+  },
+  dicomDownload: (context, studyUID, seriesUID) => {
+    if (context.client) {
+      context.client.getRemote().Cone.dicomDownload(studyUID, seriesUID).catch(console.error);
+    }
+  },
+  getStatus: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.getStatus().catch(console.error);
+    }
+  },
+  turnOnSlice3D: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.turnOnSlice3D().catch(console.error);
+    }
+  },
+  turnOffSlice3D: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.turnOffSlice3D().catch(console.error);
+    }
+  },
+  slice3D: (context, orientation) => {
+    if (context.client) {
+      context.client.getRemote().Cone.slice3D(orientation).catch(console.error);
+    }
+  },
+  revertCameraEndo: (context) => {
+    if(context.client) {
+      context.client.getRemote().Cone.revertCameraEndo().catch(console.error);
+    }
+  },
+  nextCameraPositionEndo: (context) => {
+    if(context.client) {
+      context.client.getRemote().Cone.nextCameraPositionEndo().catch(console.error);
+    }
+  },
+  prevCameraPositionEndo: (context) => {
+    if(context.client) {
+      context.client.getRemote().Cone.prevCameraPositionEndo().catch(console.error);
+    }
+  },
+  setCrosslines: (context) => {
+    if(context.client) {
+      context.client.getRemote().Cone.setCrosslines().catch(console.error);
+    }
+  },
+  spin: (context, option) => {
+    if(context.client) {
+      context.client.getRemote().Cone.spin(option).catch(console.error);
+    }
+  },
+  activeWL: (context) => {
+    if (context.client) {
+      context.client.getRemote().Cone.activeWL().catch(console.error);
+    }
+  },
+  applyWLPreset: (context, ww, wl) => {
+    if (context.client) {
+      context.client.getRemote().Cone.applyWLPreset(ww, wl).catch(console.error);
     }
   }
 };

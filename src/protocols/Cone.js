@@ -1,9 +1,9 @@
 /* eslint-disable arrow-body-style */
 export default function createMethods(session) {
   return {
-    createVisualization: () => session.call('volume.initialize', []),
+    createVisualization: () => session.call('volume.create', ["VOLUME_AND_MPR"]),
     shading: () => session.call('volume.shade', []),
-    createNewVisualization: (seriesUID) => session.call('volume.create', [seriesUID]),
+    createNewVisualization: () => session.call('volume.recreate', ["1.2.840.113619.2.438.3.2831208971.408.1719531439.122", "1.2.840.113619.2.438.3.2831208971.408.1719531439.198"]),
     activeRotate: () => session.call('volume.rotate', []),
     rotateDirection: (direction) => session.call('volume.view.plane', [direction]),
     applyPreset: (name) => session.call('volume.preset', [name]),
@@ -14,9 +14,19 @@ export default function createMethods(session) {
     activeCutFreehand: () => session.call('volume.crop.freehand', ["INSIDE"]),
     removeBed: () => session.call('volume.remove.bed'),
     activePan: () => session.call('volume.pan', []),
+    activeZoom: () => session.call('volume.zoom', []),
     resetViewport: () => session.call('volume.reset', []),
-    updateResolution: (resolution) =>
-      session.call('vtk.cone.resolution.update', [resolution]),
-    shift: () => session.call('volume.shift', [])
+    updateResolution: (resolution) => session.call('vtk.cone.resolution.update', [resolution]),
+    shift: () => session.call('volume.shift', []),
+    dicomDownload: (studyUID, seriesUID) => session.call('volume.recreate', [studyUID, seriesUID]),
+    getStatus: () => session.call('dicom.status', []),
+    slice3D: (orientation) => session.call('volume.slice', [orientation]),
+    revertCameraEndo: () => session.call('endoscopy.flythrough.revert', []),
+    nextCameraPositionEndo: () => session.call('endoscopy.flythrough.next', []),
+    prevCameraPositionEndo: () => session.call('endoscopy.flythrough.prev', []),
+    spin: (option) => session.call("volume.spin", [option]),
+    setCrosslines: () => session.call("mpr.crosslines", []),
+    activeWL: () => session.call("mpr.wl", []),
+    applyWLPreset: (ww, wl) => session.call("mpr.wl.preset", [ww, wl]),
   };
 }
