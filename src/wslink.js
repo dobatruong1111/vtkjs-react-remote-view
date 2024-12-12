@@ -13,11 +13,14 @@ const wslink = {
   connect: (context, setClient, setBusy, sessionURL) => {
 
     // Initiate network connection
-    const config = { application: "cone" };
+    const config = {
+      application: "cone",
+      sessionURL: sessionURL
+    };
 
     // We suppose that we have dev server and that ParaView/VTK is running on port 1234
     // config.sessionURL = `ws://${window.location.hostname}:1234/ws`;
-    config.sessionURL = sessionURL;
+    // config.sessionURL = sessionURL;
 
     const client = context.client;
     if (client && client.isConnected()) {
@@ -205,19 +208,14 @@ const wslink = {
       context.client.getRemote().Cone.slice3D(orientation).catch(console.error);
     }
   },
-  revertCameraEndo: (context) => {
+  flythrough: (context, operation) => {
     if(context.client) {
-      context.client.getRemote().Cone.revertCameraEndo().catch(console.error);
+      context.client.getRemote().Cone.flythrough(operation).catch(console.error);
     }
   },
-  nextCameraPositionEndo: (context) => {
+  resetEndo: (context) => {
     if(context.client) {
-      context.client.getRemote().Cone.nextCameraPositionEndo().catch(console.error);
-    }
-  },
-  prevCameraPositionEndo: (context) => {
-    if(context.client) {
-      context.client.getRemote().Cone.prevCameraPositionEndo().catch(console.error);
+      context.client.getRemote().Cone.resetEndo().catch(console.error);
     }
   },
   setCrosslines: (context) => {

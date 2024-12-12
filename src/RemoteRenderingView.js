@@ -11,6 +11,7 @@ const RemoteRenderView = ({ viewId = '-1', client = null }) => {
   useEffect(() => {
     view.current = vtkRemoteView.newInstance({
       rpcWheelEvent: "viewport.mouse.zoom.wheel",
+      // rpcMouseEvent: "viewport.mouse.interaction"
     });
     // default of 0.5 causes 2x size labels on high-DPI screens. 1 good for demo, not for production.
     if (window.location.hostname.split(".")[0] === "localhost") {

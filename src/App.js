@@ -47,9 +47,9 @@ function App() {
 
     // axios.post("http://192.168.1.13:8888/ws/rest/v1/session3d/websocketlink",
     //   {
-    //     session2D: "07017dcc-0816-4499-a61b-04f8213197c0",
+    //     session2D: "f49b2c32-0ee1-4986-9a8b-e3efa7e7145e",
     //     studyUID: "2.25.313472556869089568467430831702503378132",
-    //     seriesUID: "1.2.840.113619.2.495.13407973.1393672.30831.1725321555.543"
+    //     seriesUID: "1.2.840.113619.2.311.21069929483845356808000867488496312106"
     //   }
     // ).then(function (response) {
     //   let wsURL = response.data?.websocketUrl;
@@ -146,13 +146,9 @@ function App() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="inherit">
         <Toolbar>
-          <img src={logo} alt="logo" className="logo"></img>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            3D
-          </Typography>
-          <Button variant="outlined" onClick={reinitializeServer}>Download</Button>
+          {/* <Button variant="outlined" onClick={reinitializeServer}>Download</Button>
           <Button variant="outlined" onClick={() => wslink.createVolume(context.current)}>Create</Button>
-          <Button variant="outlined" onClick={shift}>WL</Button>
+          <Button variant="outlined" onClick={shift}>WL</Button> */}
           {/* <Button variant="outlined" onClick={activeRotate}>Rotate</Button> */}
           {/* <Button variant="outlined" onClick={activeZoom}>Zoom</Button> */}
           {/* <Button variant="outlined" onClick={activePan}>Pan</Button> */}
@@ -182,9 +178,10 @@ function App() {
           <Button variant="outlined" onClick={() => wslink.slice3D(context.current, [])}>Turn off</Button>
           <Button variant="outlined" onClick={() => wslink.setCrosslines(context.current, [])}>Crosslines</Button>
           {/* <Button variant="outlined" onClick={() => wslink.slice3D(context.current, ["AXIAL", "CORONAL"])}>Test</Button> */}
-          {/* <Button variant="outlined" onClick={() => wslink.revertCameraEndo(context.current)}>Revert</Button> */}
-          {/* <Button variant="outlined" onClick={() => wslink.prevCameraPositionEndo(context.current)}>Prev</Button> */}
-          {/* <Button variant="outlined" onClick={() => wslink.nextCameraPositionEndo(context.current)}>Next</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.flythrough(context.current, "PREV")}>Prev</Button>
+          <Button variant="outlined" onClick={() => wslink.flythrough(context.current, "NEXT")}>Next</Button>
+          <Button variant="outlined" onClick={() => wslink.flythrough(context.current, "REVERT")}>Revert</Button> */}
+          <Button variant="outlined" onClick={() => wslink.resetViewport(context.current)}>Reset</Button>
           {/* <Button variant="outlined" onClick={() => wslink.spin(context.current, "PREV")}>Prev</Button> */}
           {/* <Button variant="outlined" onClick={() => wslink.spin(context.current, "NEXT")}>Next</Button> */}
           {/* <Button variant="outlined" onClick={() => wslink.activeWL(context.current)}>WL</Button> */}
@@ -196,22 +193,34 @@ function App() {
 
       <Box className="appContent">
         <div className="views">
-          {/* <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
-            <RemoteRenderView client={client} viewId="1" />
-          </div> */}
-
-          <div style={{ position: "relative", width: "300px", height: "300px" }}>
+          <div className="volume">
+            <div style={{ position: "relative", width: "100%", height: "90%"}}>
+              <RemoteRenderView client={client} viewId="1" />
+            </div>
+          </div>
+          <div className="mpr">
+            <div style={{ position: "relative", width: "100%", height: "30%", borderLeft: "0.5px groove white", borderBottom: "0.5px groove white" }}>
+              <RemoteRenderView client={client} viewId="2" />
+            </div>
+            <div style={{ position: "relative", width: "100%", height: "30%", borderLeft: "0.5px groove white", borderBottom: "0.5px groove white" }}>
+              <RemoteRenderView client={client} viewId="3" />
+            </div>
+            <div style={{ position: "relative", width: "100%", height: "30%", borderLeft: "0.5px groove white", borderBottom: "0.5px groove white" }}>
+              <RemoteRenderView client={client} viewId="4" />
+            </div>
+          </div>
+          {/* <div style={{ position: "relative", width: "300px", height: "200px", border: "0.5px groove white" }}>
             <RemoteRenderView client={client} viewId="1" />
           </div>
-          <div style={{ position: "relative", width: "300px", height: "300px" }}>
+          <div style={{ position: "relative", width: "300px", height: "200px", border: "0.5px groove white" }}>
             <RemoteRenderView client={client} viewId="2" />
           </div>
-          <div style={{ position: "relative", width: "300px", height: "300px" }}>
+          <div style={{ position: "relative", width: "300px", height: "200px", border: "0.5px groove white" }}>
             <RemoteRenderView client={client} viewId="3" />
           </div>
-          <div style={{ position: "relative", width: "300px", height: "300px" }}>
+          <div style={{ position: "relative", width: "300px", height: "200px", border: "0.5px groove white" }}>
             <RemoteRenderView client={client} viewId="4" />
-          </div>
+          </div> */}
         </div>
       </Box>
     </Box>
