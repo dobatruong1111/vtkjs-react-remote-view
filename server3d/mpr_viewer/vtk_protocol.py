@@ -16,10 +16,11 @@ from endo_viewer import EndoscopyViewer
 class VtkCone(vtk_protocols.vtkWebProtocol):
     def __init__(self) -> None:
         self.number_slices = 1
-
         self.scroll_position_axial = 0
         self.scroll_position_coronal = 0
         self.scroll_position_sagital = 0
+        self.picker = vtk.vtkWorldPointPicker()
+        self.last_position = None
 
     def create_slice_window(self, orientation: str) -> SliceData:
         renderer = vtk.vtkRenderer()
@@ -52,7 +53,7 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
         slice_data.overlay_renderer = overlay_renderer
 
         renderer.AddActor(actor)
-        renderer.AddActor(slice_data.text.actor)
+        # renderer.AddActor(slice_data.text.actor)
         
         return slice_data
     
@@ -77,7 +78,9 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
 
             self.update_display_extent(image, orientation)
 
-            self.cross_axial.SetModelBounds(self.slice_data_axial.actor.GetBounds())
+            bounds = self.slice_data_axial.actor.GetBounds()
+            # self.cross_axial.SetModelBounds(self.slice_data_axial.actor.GetBounds())
+            self.cross_axial.SetModelBounds(bounds[0] - 2*bounds[1], bounds[1] + 2*bounds[1], bounds[2] - 2*bounds[3], bounds[3] + 2*bounds[3], bounds[4], bounds[5])
             self.cross_axial.Update()
             self.cross_axial.GetOutput().GetCellData().SetScalars(self.color_array_axial)
         elif orientation == "CORONAL":
@@ -86,7 +89,9 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
 
             self.update_display_extent(image, orientation)
 
-            self.cross_coronal.SetModelBounds(self.slice_data_coronal.actor.GetBounds())
+            bounds = self.slice_data_coronal.actor.GetBounds()
+            # self.cross_coronal.SetModelBounds(self.slice_data_coronal.actor.GetBounds())
+            self.cross_coronal.SetModelBounds(bounds[0] - 3*bounds[1], bounds[1] + 3*bounds[1], bounds[2], bounds[3], bounds[4] - 3*bounds[5], bounds[5] + 3*bounds[5])
             self.cross_coronal.Update()
             self.cross_coronal.GetOutput().GetCellData().SetScalars(self.color_array_coronal)
         else:
@@ -95,7 +100,9 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
 
             self.update_display_extent(image, orientation)
 
-            self.cross_sagital.SetModelBounds(self.slice_data_sagital.actor.GetBounds())
+            bounds = self.slice_data_sagital.actor.GetBounds()
+            # self.cross_sagital.SetModelBounds(self.slice_data_sagital.actor.GetBounds())
+            self.cross_sagital.SetModelBounds(bounds[0], bounds[1], bounds[2] - 3*bounds[3], bounds[3] + 3*bounds[3], bounds[4] - 3*bounds[5], bounds[5] + 3*bounds[5])
             self.cross_sagital.Update()
             self.cross_sagital.GetOutput().GetCellData().SetScalars(self.color_array_sagital)
 
@@ -120,32 +127,50 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
             camera.SetPosition(-1, 0, 0)
         camera.ParallelProjectionOn()
         renderer.ResetCamera()
+        # Zoom camera
+        if orientation == "AXIAL":
+            camera.Zoom(1.2)
+        elif orientation == "CORONAL":
+            camera.Zoom(1.2)
+        else:
+            camera.Zoom(1.2)
 
     def SetInteractorStyle(self) -> None:
         render_window_axial = self.getApplication().GetObjectIdMap().GetActiveObject("AXIAL_VIEW")
         interactor_axial = render_window_axial.GetInteractor()
-        style_axial = CrossInteractorStyle_2(self, "AXIAL")
+        # style_axial = CrossInteractorStyle_2(self, "AXIAL")
+        style_axial = vtk.vtkInteractorStyle()
         interactor_axial.SetInteractorStyle(style_axial)
 
         render_window_coronal = self.getApplication().GetObjectIdMap().GetActiveObject("CORONAL_VIEW")
         interactor_coronal = render_window_coronal.GetInteractor()
-        style_coronal = CrossInteractorStyle_2(self, "CORONAL")
+        # style_coronal = CrossInteractorStyle_2(self, "CORONAL")
+        style_coronal = vtk.vtkInteractorStyle()
         interactor_coronal.SetInteractorStyle(style_coronal)
 
         render_window_sagital = self.getApplication().GetObjectIdMap().GetActiveObject("SAGITAL_VIEW")
         interactor_sagital = render_window_sagital.GetInteractor()
-        style_sagital = CrossInteractorStyle_2(self, "SAGITAL")
+        # style_sagital = CrossInteractorStyle_2(self, "SAGITAL")
+        style_sagital = vtk.vtkInteractorStyle()
         interactor_sagital.SetInteractorStyle(style_sagital)
 
-    def UpdateRender(self) -> None:
+    def UpdateRender(self, orientation=None) -> None:
         render_window_axial = self.getApplication().GetObjectIdMap().GetActiveObject("AXIAL_VIEW")
-        render_window_axial.Render()
-
         render_window_coronal = self.getApplication().GetObjectIdMap().GetActiveObject("CORONAL_VIEW")
-        render_window_coronal.Render()
-
         render_window_sagital = self.getApplication().GetObjectIdMap().GetActiveObject("SAGITAL_VIEW")
-        render_window_sagital.Render()
+        if orientation is None:
+            render_window_axial.Render()
+            render_window_coronal.Render()
+            render_window_sagital.Render()
+        elif orientation == "AXIAL":
+            render_window_coronal.Render()
+            render_window_sagital.Render()
+        elif orientation == "CORONAL":
+            render_window_axial.Render()
+            render_window_sagital.Render()
+        elif orientation == "SAGITAL":
+            render_window_axial.Render()
+            render_window_coronal.Render()
 
     def UpdateRenderVolume(self) -> None:
         render_window_volume = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
@@ -386,9 +411,12 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
 
     def loadData(self) -> None:
         # 281
-        # path = "D:/workingspace/dicom/220277460 Nguyen Thanh Dat"
+        path = "D:/workingspace/dicom/220277460 Nguyen Thanh Dat"
         # 289
-        path = "D:/workingspace/dicom/DICOM_NGUYEN VAN HUONG78T_CT_9210255004/1.2.392.200036.9123.100.11.12.700001708.2024010308030744.44/1.2.392.200036.9123.100.11.15114374081372786170424474122344997"
+        # path = "D:/workingspace/dicom/DICOM_NGUYEN VAN HUONG78T_CT_9210255004/1.2.392.200036.9123.100.11.12.700001708.2024010308030744.44/1.2.392.200036.9123.100.11.15114374081372786170424474122344997"
+        # path = "D:/workingspace/viewer/be_project/viewer-core/server3d/src/data/2.25.308347458458694628345015586377307886637/1.3.12.2.1107.5.1.7.120165.30000024100716114480400000287/data"
+        # path = "D:/workingspace/viewer/be_project/viewer-core/server3d/src/data/1.2.840.113619.2.438.3.2831208971.408.1719531439.122/1.2.840.113619.2.438.3.2831208971.408.1719531439.198/data"
+        # path = "D:/workingspace/viewer/be_project/viewer-core/server3d/src/data/2.25.276674408816863868815262153252203392782/1.2.840.113619.2.428.3.678656.566.1723853367.555.3/data"
         dicomReader = vtk.vtkDICOMImageReader()
         dicomReader.SetDirectoryName(path)
         dicomReader.Update()
@@ -471,7 +499,7 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
         renderer.ResetCameraClippingRange()
     
     @exportRpc("volume.create")
-    def createVisualization(self, viewMode=None) -> None:
+    def createVisualization(self, viewMode=None, size=None) -> None:
         # Load dicom
         self.loadData()
 
@@ -481,9 +509,9 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
 
         self.build_cross_lines()
 
-        self.EnableText("AXIAL")
-        self.EnableText("CORONAL")
-        self.EnableText("SAGITAL")
+        # self.EnableText("AXIAL")
+        # self.EnableText("CORONAL")
+        # self.EnableText("SAGITAL")
 
         self.slice = Slice()
 
@@ -514,13 +542,13 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
 
         self.SetInteractorStyle()
 
-        # volume_viewer = self.volume_viewer = VolumeViewer()
-        # volume_viewer.LoadVolume()
+        volume_viewer = self.volume_viewer = VolumeViewer()
+        volume_viewer.LoadVolume()
 
-        # render_window_volume = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
-        # renderer_volume = render_window_volume.GetRenderers().GetFirstRenderer()
-        # renderer_volume.AddVolume(volume_viewer.volume)
-        # renderer_volume.ResetCamera()
+        render_window_volume = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
+        renderer_volume = render_window_volume.GetRenderers().GetFirstRenderer()
+        renderer_volume.AddVolume(volume_viewer.volume)
+        renderer_volume.ResetCamera()
 
         # volume_viewer.LoadSlicePlane()
         # slice_plane = volume_viewer.slice_plane
@@ -532,7 +560,7 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
         # slice_plane.plane_x.SetInteractor(interactor_volume)
         # slice_plane.Enable()
 
-        # render_window_volume.Render()
+        render_window_volume.Render()
 
         # endo_viewer = self.endo_viewer = EndoscopyViewer()
         # endo_viewer.LoadVolume()
@@ -557,45 +585,150 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
             self.getApplication().InvokeEvent(vtk.vtkCommand.StartInteractionEvent)
 
         viewId = event["view"]
+        # Volume
         if viewId == "1":
+            render_window_volume = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
+            if render_window_volume and 'spinY' in event:
+                zoomFactor = 1.0 - event['spinY'] / 10.0
+
+                camera = render_window_volume.GetRenderers().GetFirstRenderer().GetActiveCamera()
+                fp = camera.GetFocalPoint()
+                pos = camera.GetPosition()
+                delta = [fp[i] - pos[i] for i in range(3)]
+                camera.Zoom(zoomFactor)
+
+                pos2 = camera.GetPosition()
+                camera.SetFocalPoint([pos2[i] + delta[i] for i in range(3)])
+                render_window_volume.Modified()
+        # Axial
+        elif viewId == "2":
             if "spinY" in event and event.get("spinY") and event.get("spinY") < 0:
                 self.OnScrollForward("AXIAL")
             elif "spinY" in event and event.get("spinY") and event.get("spinY") > 0:
                 self.OnScrollBackward("AXIAL")
-
-        elif viewId == "2":
+        # Coronal
+        elif viewId == "3":
             if "spinY" in event and event.get("spinY") and event.get("spinY") < 0:
                 self.OnScrollForward("CORONAL")
             elif "spinY" in event and event.get("spinY") and event.get("spinY") > 0:
                 self.OnScrollBackward("CORONAL")
-
-        elif viewId == "3":
+        # Sagital
+        elif viewId == "4":
             if "spinY" in event and event.get("spinY") and event.get("spinY") < 0:
                 self.OnScrollForward("SAGITAL")
             elif "spinY" in event and event.get("spinY") and event.get("spinY") > 0:
                 self.OnScrollBackward("SAGITAL")
 
-        # elif viewId == "4":
-        #     render_window_volume = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
-        #     if render_window_volume and 'spinY' in event:
-        #         zoomFactor = 1.0 - event['spinY'] / 10.0
-
-        #         camera = render_window_volume.GetRenderers().GetFirstRenderer().GetActiveCamera()
-        #         fp = camera.GetFocalPoint()
-        #         pos = camera.GetPosition()
-        #         delta = [fp[i] - pos[i] for i in range(3)]
-        #         camera.Zoom(zoomFactor)
-
-        #         pos2 = camera.GetPosition()
-        #         camera.SetFocalPoint([pos2[i] + delta[i] for i in range(3)])
-        #         render_window_volume.Modified()
-
         if 'End' in event["type"]:
             self.getApplication().InvokeEvent(vtk.vtkCommand.EndInteractionEvent)
 
+    # @exportRpc("viewport.mouse.interaction")
+    def mouseInteraction(self, event):
+        """
+        RPC Callback for mouse interactions.
+        """
+        view = self.getView(event["view"])
+
+        orientation = None
+        if event["view"] == '1':
+            orientation = "VOLUME"
+        elif event["view"] == '2':
+            orientation = "AXIAL"
+        elif event["view"] == '3':
+            orientation = "CORONAL"
+        else:
+            orientation = "SAGITAL"
+
+        buttons = 0
+        if event["buttonLeft"]:
+            buttons = vtk.vtkWebInteractionEvent.LEFT_BUTTON
+        if event["buttonMiddle"]:
+            buttons = vtk.vtkWebInteractionEvent.MIDDLE_BUTTON
+        if event["buttonRight"]:
+            buttons = vtk.vtkWebInteractionEvent.RIGHT_BUTTON
+
+        modifiers = 0
+        if event["shiftKey"]:
+            modifiers = vtk.vtkWebInteractionEvent.SHIFT_KEY
+        if event["ctrlKey"]:
+            modifiers = vtk.vtkWebInteractionEvent.CTRL_KEY
+        if event["altKey"]:
+            modifiers = vtk.vtkWebInteractionEvent.ALT_KEY
+        if event["metaKey"]:
+            modifiers = vtk.vtkWebInteractionEvent.META_KEY
+
+        pvevent = vtk.vtkWebInteractionEvent()
+        pvevent.SetButtons(buttons)
+        pvevent.SetModifiers(modifiers)
+        if "x" in event:
+            pvevent.SetX(event["x"])
+        if "y" in event:
+            pvevent.SetY(event["y"])
+        if "scroll" in event:
+            pvevent.SetScroll(event["scroll"])
+        if event["action"] == "dblclick":
+            pvevent.SetRepeatCount(2)
+        # pvevent.SetKeyCode(event["charCode"])
+        retVal = self.getApplication().HandleInteractionEvent(view, pvevent)
+        del pvevent
+
+        if event["action"] == "down":
+            self.getApplication().InvokeEvent("StartInteractionEvent")
+            if event["buttonLeft"]:
+                if orientation == 'VOLUME':
+                    # # Start rotate
+                    # # view.GetInteractor().GetInteractorStyle().StartRotate()
+
+                    # # Rotate
+                    # renderer = view.GetRenderers().GetFirstRenderer()
+
+                    # last_position = view.GetInteractor().GetLastEventPosition()
+                    # # print(f"last position: {last_position}")
+                    # position = view.GetInteractor().GetEventPosition()
+                    # # print(f"position: {position}")
+                    # dx = position[0] - last_position[0]
+                    # dy = position[1] - last_position[1]
+
+                    # size = view.GetSize()
+
+                    # delta_elevation = -20.0 / size[1]
+                    # delta_azimuth = -20.0 / size[0]
+
+                    # MotionFactor = 10.0
+                    # rxf = dx * delta_azimuth * MotionFactor
+                    # ryf = dy * delta_elevation * MotionFactor
+
+                    # camera = renderer.GetActiveCamera()
+                    # camera.Azimuth(rxf)
+                    # # print(f"Azimuth: {rxf}")
+                    # camera.Elevation(ryf)
+                    # # print(f"Elevation: {ryf}")
+                    # camera.OrthogonalizeViewUp()
+
+                    # view.Render()
+                    pass
+                else:
+                    size = view.GetSize()
+                    mouse_x = round(event["x"] * size[0])
+                    mouse_y = round(event["y"] * size[1])
+                    # mouse_x, mouse_y = view.GetInteractor().GetEventPosition()
+                    x, y, z = self.get_coordinate_cursor(mouse_x, mouse_y, orientation, self.picker)
+                    self.UpdateSlicesPosition(orientation, [x, y, z])
+                    self.SetCrossFocalPoint([x, y, z])
+                    self.UpdateRender(orientation)
+
+        if event["action"] == "up":
+            self.getApplication().InvokeEvent("EndInteractionEvent")
+
+        if retVal:
+            self.getApplication().InvokeEvent("UpdateEvent")
+
+        return retVal
+    
     @exportRpc("endoscopy.flythrough.revert")
     def revert(self) -> None:
-        render_window = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
+        # render_window = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
+        render_window = self.getView('4')
         renderer = render_window.GetRenderers().GetFirstRenderer()
 
         camera = renderer.GetActiveCamera()
@@ -612,7 +745,8 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
         position = self.cross_axial.GetFocalPoint()
         self.UpdateCameraPosition(position)
 
-        render_window = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
+        # render_window = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
+        render_window = self.getView('4')
         render_window.Render()
         self.getApplication().InvokeEvent(vtk.vtkCommand.UpdateEvent)
 
@@ -624,6 +758,7 @@ class VtkCone(vtk_protocols.vtkWebProtocol):
         position = self.cross_axial.GetFocalPoint()
         self.UpdateCameraPosition(position)
 
-        render_window = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
+        # render_window = self.getApplication().GetObjectIdMap().GetActiveObject("VOLUME_VIEW")
+        render_window = self.getView('4')
         render_window.Render()
         self.getApplication().InvokeEvent(vtk.vtkCommand.UpdateEvent)

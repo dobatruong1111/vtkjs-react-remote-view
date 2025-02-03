@@ -1,9 +1,9 @@
 /* eslint-disable arrow-body-style */
 export default function createMethods(session) {
   return {
-    createVisualization: () => session.call('volume.create', ["VOLUME_AND_MPR"]),
+    createVisualization: () => session.call('volume.create', ["MPR"]),
     shading: () => session.call('volume.shade', []),
-    createNewVisualization: () => session.call('volume.recreate', ["1.2.840.113619.2.438.3.2831208971.408.1719531439.122", "1.2.840.113619.2.438.3.2831208971.408.1719531439.198"]),
+    createNewVisualization: () => session.call('volume.recreate', ["2.25.273770070420816203849299146355226291780", "1.2.840.113619.2.428.3.678656.566.1723853370.188.3"]),
     activeRotate: () => session.call('volume.rotate', []),
     rotateDirection: (direction) => session.call('volume.view.plane', [direction]),
     applyPreset: (name) => session.call('volume.preset', [name]),
@@ -27,5 +27,6 @@ export default function createMethods(session) {
     setCrosslines: () => session.call("mpr.crosslines", []),
     activeWL: () => session.call("mpr.wl", []),
     applyWLPreset: (ww, wl) => session.call("mpr.wl.preset", [ww, wl]),
+    test: () => session.call("message", ["Hello"]),
   };
 }

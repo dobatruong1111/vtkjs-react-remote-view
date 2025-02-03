@@ -21,10 +21,20 @@ class VolumeViewer:
         self.LoadImage()
         image = self.image
 
-        volume_mapper = vtk.vtkOpenGLGPUVolumeRayCastMapper()
+        # volume_mapper = vtk.vtkOpenGLGPUVolumeRayCastMapper()
+        # volume_mapper.SetInputData(image)
+        # volume_mapper.AutoAdjustSampleDistancesOff()
+        # volume_mapper.LockSampleDistanceToInputSpacingOn()
+
+        volume_mapper = vtk.vtkFixedPointVolumeRayCastMapper()
+        volume_mapper.SetAutoAdjustSampleDistances(True)
+        volume_mapper.SetLockSampleDistanceToInputSpacing(False)
+        volume_mapper.SetImageSampleDistance(1.0)
         volume_mapper.SetInputData(image)
-        volume_mapper.AutoAdjustSampleDistancesOff()
-        volume_mapper.LockSampleDistanceToInputSpacingOn()
+        spacing = image.GetSpacing()
+        sampleDistance = (spacing[0] + spacing[1] + spacing[2])/6
+        volume_mapper.SetSampleDistance(sampleDistance)
+        volume_mapper.SetInteractiveSampleDistance(sampleDistance)
 
         volume_properties = vtk.vtkVolumeProperty()
         volume_properties.SetInterpolationTypeToLinear()
@@ -56,7 +66,6 @@ class VolumeViewer:
         gradient_opacity.AddPoint(0, 1)
         gradient_opacity.AddPoint(255, 1)
         volume_properties.SetGradientOpacity(gradient_opacity)
-        self.volume_properties = volume_properties
 
         volume = vtk.vtkVolume()
         volume.SetMapper(volume_mapper)

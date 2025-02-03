@@ -1,26 +1,16 @@
 import vtkWSLinkClient from "vtk.js/Sources/IO/Core/WSLinkClient";
 import SmartConnect from "wslink/src/SmartConnect";
-
-import protocols from "./protocols";
-
 import { connectImageStream } from "vtk.js/Sources/Rendering/Misc/RemoteView";
+import protocols from "./protocols";
 
 vtkWSLinkClient.setSmartConnectClass(SmartConnect);
 
-const TOPIC = "wslink.channel";
-
 const wslink = {
   connect: (context, setClient, setBusy, sessionURL) => {
-
     // Initiate network connection
     const config = {
-      application: "cone",
       sessionURL: sessionURL
     };
-
-    // We suppose that we have dev server and that ParaView/VTK is running on port 1234
-    // config.sessionURL = `ws://${window.location.hostname}:1234/ws`;
-    // config.sessionURL = sessionURL;
 
     const client = context.client;
     if (client && client.isConnected()) {
@@ -35,52 +25,58 @@ const wslink = {
     clientToConnect.onBusyChange((busy) => {
       setBusy(busy);
     });
+    // Virtually increase work load to maybe keep isBusy() on while executing a synchronous task.
     clientToConnect.beginBusy();
 
     // Error
     clientToConnect.onConnectionError((httpReq) => {
-      const message =
-        (httpReq && httpReq.response && httpReq.response.error) ||
-        `Connection error`;
+      const message = (httpReq && httpReq.response && httpReq.response.error) || `Connection error`;
       console.error(message);
       console.log(httpReq);
     });
 
     // Close
     clientToConnect.onConnectionClose((httpReq) => {
-      const message =
-        (httpReq && httpReq.response && httpReq.response.error) ||
-        `Connection close`;
+      const message = (httpReq && httpReq.response && httpReq.response.error) || `Connection close`;
       console.error(message);
       console.log(httpReq);
     });
 
     // Connect
-    clientToConnect
-      .connect(config)
-      .then((validClient) => {
-        connectImageStream(validClient.getConnection().getSession());
-        context.client = validClient;
-        setClient(context.client);
-        clientToConnect.endBusy();
+    clientToConnect.connect(config).then((validClient) => {
+      const session = validClient.getConnection().getSession();
+      connectImageStream(session);
+      context.client = validClient;
+      setClient(context.client);
+      clientToConnect.endBusy();
 
-        // Now that the client is ready let's setup the server for us
-        if (context.client) {
-          // console.log(context.client);
-          context.client.getRemote().Cone.createVisualization().catch(console.error);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      // Now that the client is ready let's setup the server for us
+      const option = "VOLUME_AND_MPR";
+      // const option = "MPR";
+      // const option = "VOLUME";
+      // const option = "ENDOSCOPY";
+      session.call('volume.create', [option]);
+      // if (context.client) {
+      //   context.client.getRemote().Cone.createVisualization().catch(console.error);
+      // }
+    }).catch((error) => {
+      console.error(error);
+    });
   },
   createVolume: (context) => {
-    if (context.client) {
-      context.client
-        .getRemote()
-        .Cone.createVisualization()
-        .catch(console.error);
-    }
+    const session = context.client.getConnection().getSession();
+    const option = "VOLUME_AND_MPR";
+    // const option = "MPR";
+    // const option = "VOLUME";
+    // const option = "ENDOSCOPY";
+    session.call('volume.create', [option]);
+    // session.call('render.all', []);
+    // if (context.client) {
+    //   context.client
+    //     .getRemote()
+    //     .Cone.createVisualization()
+    //     .catch(console.error);
+    // }
   },
   delete: (context) => {
     if (context.client) {
@@ -111,15 +107,6 @@ const wslink = {
       context.client
         .getRemote()
         .Cone.createNewVisualization()
-        .catch(console.error);
-    }
-  },
-  updateResolution: (context, resolution) => {
-    if (context.client) {
-      // console.log(resolution);
-      context.client
-        .getRemote()
-        .Cone.updateResolution(resolution)
         .catch(console.error);
     }
   },
@@ -236,6 +223,14 @@ const wslink = {
   applyWLPreset: (context, ww, wl) => {
     if (context.client) {
       context.client.getRemote().Cone.applyWLPreset(ww, wl).catch(console.error);
+    }
+  },
+  test: (context) => {
+    if (context.client) {
+      console.log(context.client);
+      // const session = context.client.getConnection().getSession();
+      // session.call('message', ["hello"]);
+      // context.client.getRemote().Cone.test().catch(console.error);
     }
   }
 };

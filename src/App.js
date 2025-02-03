@@ -1,30 +1,24 @@
 import { useState, useRef, useEffect } from "react";
-
 import wslink from "./wslink";
-
-import logo from "./assets/logo.png";
-
 import "./App.css";
-
 import {
   Box,
   AppBar,
   Toolbar,
-  Typography,
-  Slider,
-  IconButton,
   LinearProgress,
   Button,
 } from "@mui/material";
-import { CameraAlt } from "@mui/icons-material";
 import RemoteRenderView from "./RemoteRenderingView";
-import axios from "axios";
+// import ClientRenderingView from "./ClientRenderingView";
+// import RemoteRenderView2 from "./RemoteRenderingView2";
+// import axios from "axios";
 
+const TOPIC = "mpr.channel";
 function App() {
   const context = useRef({});
-  // const [resolution, setResolution] = useState(6);
   const [client, setClient] = useState(null);
   const [busy, setBusy] = useState(0);
+  const [crosslinePositions, setCrosslinePositions] = useState(null);
 
   // console.log("re-render");
 
@@ -45,16 +39,16 @@ function App() {
     //   console.log("error: ", error);
     // })
 
-    // axios.post("http://192.168.1.13:8888/ws/rest/v1/session3d/websocketlink",
+    // axios.post("http://192.168.1.6:8888/ws/rest/v1/session3d/websocketlink",
     //   {
-    //     session2D: "f49b2c32-0ee1-4986-9a8b-e3efa7e7145e",
-    //     studyUID: "2.25.313472556869089568467430831702503378132",
-    //     seriesUID: "1.2.840.113619.2.311.21069929483845356808000867488496312106"
+    //     session2D: "47ffdf80-43a6-4ca9-95ef-e83e9c00a5b8",
+    //     studyUID: "2.25.273770070420816203849299146355226291780",
+    //     seriesUID: "1.2.840.113619.2.428.3.678656.566.1723853370.188.3"
     //   }
     // ).then(function (response) {
     //   let wsURL = response.data?.websocketUrl;
     //   if (wsURL) {
-    //     let temp = `ws://192.168.1.13:8888${wsURL}`;
+    //     let temp = `ws://192.168.1.6:8888${wsURL}`;
     //     wslink.connect(context.current, setClient, setBusy, temp);
     //   }
     // }).catch(function (error) {
@@ -65,165 +59,131 @@ function App() {
     wslink.connect(context.current, setClient, setBusy, wsURL);
   }, []);
 
-  // const updateResolution = (_event, newResolution) => {
-  //   setResolution(newResolution);
-  //   wslink.updateResolution(context.current, newResolution);
-  // };
-
-  const rotateDirection = (direction) => {
-    wslink.rotateDirection(context.current, direction)
-  }
-
-  const deleteAll = () => {
-    wslink.delete(context.current);
-  }
-
-  const shading = () => {
-    wslink.shading(context.current);
-  }
-
-  const reinitializeServer = () => {
-    wslink.reinitializeServer(context.current);
-  }
-
-  const applyPreset = (name) => {
-    wslink.applyPreset(context.current, name);
-  }
-
-  const resetViewport = () => {
-    wslink.resetViewport(context.current);
-  }
-
-  const activeLength = () => {
-    wslink.activeLength(context.current);
-  }
-
-  const activeAngle = () => {
-    wslink.activeAngle(context.current);
-  }
-
-  const activeCut = () => {
-    wslink.activeCut(context.current);
-  }
-
-  const activeCutFreehand = () => {
-    wslink.activeCutFreehand(context.current);
-  }
-
-  const removeBed = () => {
-    wslink.removeBed(context.current);
-  }
-
-  const activePan = () => {
-    wslink.activePan(context.current);
-  }
-
-  const activeZoom = () => {
-    wslink.activeZoom(context.current);
-  }
-
-  const activeRotate = () => {
-    wslink.activeRotate(context.current);
-  }
-
-  const shift = () => {
-    wslink.shift(context.current);
-  }
-
-  const dicomDownload = () => {
-    wslink.dicomDownload(context.current, "1.2.840.113619.2.438.3.2831208971.408.1719531439.122", "1.2.840.113619.2.438.3.2831208971.408.1719531439.198")
-  }
-
-  const logStatus = () => {
-    wslink.getStatus(context.current);
-
-    context.current.client.getConnection().getSession().subscribe("wslink.channel", ([status]) => {
-      console.log(status);
-    });
-  }
+  useEffect(() => {
+    if (client) {
+      const session = client.getConnection().getSession();
+      session.subscribe(TOPIC, ([msg]) => {
+        setCrosslinePositions(msg);
+      });
+    }
+  }, [client]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="inherit">
         <Toolbar>
-          {/* <Button variant="outlined" onClick={reinitializeServer}>Download</Button>
+          <Button variant="outlined" onClick={() => wslink.reinitializeServer(context.current)}>Download</Button>
           <Button variant="outlined" onClick={() => wslink.createVolume(context.current)}>Create</Button>
-          <Button variant="outlined" onClick={shift}>WL</Button> */}
-          {/* <Button variant="outlined" onClick={activeRotate}>Rotate</Button> */}
-          {/* <Button variant="outlined" onClick={activeZoom}>Zoom</Button> */}
-          {/* <Button variant="outlined" onClick={activePan}>Pan</Button> */}
-          {/* <Button variant="outlined" onClick={() => rotateDirection("ANTERIOR")}>A</Button>
-          <Button variant="outlined" onClick={() => rotateDirection("POSTERIOR")}>P</Button>
-          <Button variant="outlined" onClick={() => rotateDirection("LEFT")}>L</Button>
-          <Button variant="outlined" onClick={() => rotateDirection("RIGHT")}>R</Button>
-          <Button variant="outlined" onClick={() => rotateDirection("SUPERIOR")}>S</Button>
-          <Button variant="outlined" onClick={() => rotateDirection("INFERIOR")}>I</Button> */}
-          {/* <Button variant="outlined" onClick={() => applyPreset("CT-AAA")}>CT-AAA</Button> */}
-          {/* <Button variant="outlined" onClick={() => applyPreset("CT-Cardiac")}>CT-Cardiac</Button> */}
-          {/* <Button variant="outlined" onClick={() => applyPreset("CT-Bone")}>CT-Bone</Button> */}
-          {/* <Button variant="outlined" onClick={() => applyPreset("CT-Chest-Vessels")}>CT-Chest-Vessels</Button> */}
-          {/* <Button variant="outlined" onClick={() => applyPreset("Standard")}>Standard</Button> */}
-          {/* <Button variant="outlined" onClick={() => applyPreset("Soft + Skin")}>Soft + Skin</Button> */}
-          {/* <Button variant="outlined" onClick={activeLength}>Length</Button> */}
-          {/* <Button variant="outlined" onClick={activeAngle}>Angle</Button> */}
-          {/* <Button variant="outlined" onClick={deleteAll}>delete</Button> */}
-          {/* <Button variant="outlined" onClick={activeCut}>Crop</Button> */}
-          {/* <Button variant="outlined" onClick={activeCutFreehand}>Freehand</Button> */}
-          {/* <Button variant="outlined" onClick={removeBed}>Bed</Button> */}
-          {/* <Button variant="outlined" onClick={resetViewport}>Reset</Button> */}
-          {/* <Button variant="outlined" onClick={shading}>Shading</Button> */}
-          {/* <Button variant="outlined" onClick={dicomDownload}>download</Button> */}
-          {/* <Button variant="outlined" onClick={logStatus}>log status</Button> */}
+          <Button variant="outlined" onClick={() => wslink.shift(context.current)}>WL</Button>
+          <Button variant="outlined" onClick={() => wslink.activeRotate(context.current)}>Rotate</Button>
+          <Button variant="outlined" onClick={() => wslink.activeZoom(context.current)}>Zoom</Button>
+          <Button variant="outlined" onClick={() => wslink.activePan(context.current)}>Pan</Button>
+          {/* <Button variant="outlined" onClick={() => wslink.applyPreset(context.current, "CT-AAA")}>CT-AAA</Button>
+          <Button variant="outlined" onClick={() => wslink.applyPreset(context.current, "CT-AAA-Bone")}>CT-AAA-Bone</Button>
+          <Button variant="outlined" onClick={() => wslink.applyPreset(context.current, "MR-Default-TOF-GE")}>MR-GE</Button>
+          <Button variant="outlined" onClick={() => wslink.applyPreset(context.current, "MR-Default-TOF-Hitachi")}>MR-Hitachi</Button>
+          <Button variant="outlined" onClick={() => wslink.applyPreset(context.current, "MR-Default-TOF-Philips")}>MR-Philips</Button>
+          <Button variant="outlined" onClick={() => wslink.applyPreset(context.current, "MR-Default-TOF-Siemens")}>MR-Siemens</Button>
+          <Button variant="outlined" onClick={() => wslink.applyPreset(context.current, "MR-Default-TOF-UIH")}>MR-UIH</Button>
+          <Button variant="outlined" onClick={() => wslink.applyPreset(context.current, "Standard")}>Standard</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.applyPreset(context.current, "Soft + Skin")}>Soft + Skin</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.activeLength(context.current)}>Length</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.activeAngle(context.current)}>Angle</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.delete(context.current)}>Delete</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.activeCut(context.current)}>Crop</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.activeCutFreehand(context.current)}>Freehand</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.removeBed(context.current)}>Bed</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.shading(context.current)}>Shade</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.dicomDownload(context.current, "1.2.840.113619.2.438.3.2831208971.408.1719531439.122", "1.2.840.113619.2.438.3.2831208971.408.1719531439.198")}>download</Button> */}
           <Button variant="outlined" onClick={() => wslink.slice3D(context.current, ["AXIAL", "CORONAL", "SAGITAL"])}>Turn on</Button>
           <Button variant="outlined" onClick={() => wslink.slice3D(context.current, [])}>Turn off</Button>
-          <Button variant="outlined" onClick={() => wslink.setCrosslines(context.current, [])}>Crosslines</Button>
-          {/* <Button variant="outlined" onClick={() => wslink.slice3D(context.current, ["AXIAL", "CORONAL"])}>Test</Button> */}
-          {/* <Button variant="outlined" onClick={() => wslink.flythrough(context.current, "PREV")}>Prev</Button>
-          <Button variant="outlined" onClick={() => wslink.flythrough(context.current, "NEXT")}>Next</Button>
-          <Button variant="outlined" onClick={() => wslink.flythrough(context.current, "REVERT")}>Revert</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.setCrosslines(context.current, [])}>Crosslines</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.test(context.current)}>Test</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.flythrough(context.current, "PREV")}>Endo-Prev</Button>
+          <Button variant="outlined" onClick={() => wslink.flythrough(context.current, "NEXT")}>Endo-Next</Button>
+          <Button variant="outlined" onClick={() => wslink.flythrough(context.current, "REVERT")}>Endo-Revert</Button> */}
           <Button variant="outlined" onClick={() => wslink.resetViewport(context.current)}>Reset</Button>
           {/* <Button variant="outlined" onClick={() => wslink.spin(context.current, "PREV")}>Prev</Button> */}
           {/* <Button variant="outlined" onClick={() => wslink.spin(context.current, "NEXT")}>Next</Button> */}
           {/* <Button variant="outlined" onClick={() => wslink.activeWL(context.current)}>WL</Button> */}
-          {/* <Button variant="outlined" onClick={() => wslink.applyWLPreset(context.current, 90, 35)}>Brain (90,25)</Button> */}
-          {/* <Button variant="outlined" onClick={() => wslink.applyWLPreset(context.current, 4000, 700)}>Spine (4000,700)</Button> */}
+          {/* <Button variant="outlined" onClick={() => wslink.test(context.current)}>Message</Button> */}
         </Toolbar>
         <LinearProgress sx={{ opacity: !!busy ? 1 : 0 }} />
       </AppBar>
-
       <Box className="appContent">
         <div className="views">
-          <div className="volume">
-            <div style={{ position: "relative", width: "100%", height: "90%"}}>
-              <RemoteRenderView client={client} viewId="1" />
+          {/* <div className="volume">
+            <div id="volume" style={{ position: "relative", width: "100%", height: "90%"}}>
+              <RemoteRenderView
+                client={client}
+                viewId="1"
+                crosslineColor={["red", "blue"]}
+                crosslinePositions={crosslinePositions}
+              />
             </div>
           </div>
           <div className="mpr">
-            <div style={{ position: "relative", width: "100%", height: "30%", borderLeft: "0.5px groove white", borderBottom: "0.5px groove white" }}>
-              <RemoteRenderView client={client} viewId="2" />
+            <div id="axial" style={{ position: "relative", width: "100%", height: "30%", borderLeft: "0.5px groove white", borderBottom: "0.5px groove white" }}>
+              <RemoteRenderView
+                client={client}
+                viewId="2"
+                crosslineColor={["red", "blue"]}
+                crosslinePositions={crosslinePositions}
+              />
             </div>
-            <div style={{ position: "relative", width: "100%", height: "30%", borderLeft: "0.5px groove white", borderBottom: "0.5px groove white" }}>
-              <RemoteRenderView client={client} viewId="3" />
+            <div id="coronal" style={{ position: "relative", width: "100%", height: "30%", borderLeft: "0.5px groove white", borderBottom: "0.5px groove white" }}>
+              <RemoteRenderView
+                client={client}
+                viewId="3"
+                crosslineColor={["red", "green"]}
+                crosslinePositions={crosslinePositions}
+              />
             </div>
-            <div style={{ position: "relative", width: "100%", height: "30%", borderLeft: "0.5px groove white", borderBottom: "0.5px groove white" }}>
-              <RemoteRenderView client={client} viewId="4" />
+            <div id="sagital" style={{ position: "relative", width: "100%", height: "30%", borderLeft: "0.5px groove white", borderBottom: "0.5px groove white" }}>
+              <RemoteRenderView
+                client={client}
+                viewId="4"
+                crosslineColor={["blue", "green"]}
+                crosslinePositions={crosslinePositions}
+              />
             </div>
-          </div>
-          {/* <div style={{ position: "relative", width: "300px", height: "200px", border: "0.5px groove white" }}>
-            <RemoteRenderView client={client} viewId="1" />
-          </div>
-          <div style={{ position: "relative", width: "300px", height: "200px", border: "0.5px groove white" }}>
-            <RemoteRenderView client={client} viewId="2" />
-          </div>
-          <div style={{ position: "relative", width: "300px", height: "200px", border: "0.5px groove white" }}>
-            <RemoteRenderView client={client} viewId="3" />
-          </div>
-          <div style={{ position: "relative", width: "300px", height: "200px", border: "0.5px groove white" }}>
-            <RemoteRenderView client={client} viewId="4" />
           </div> */}
+          <div style={{ position: "relative", width: "600px", height: "600px", border: "0.5px groove white" }}>
+            <RemoteRenderView
+              client={client}
+              viewId="1"
+              crosslineColor={null}
+              crosslinePositions={null}
+            />
+          </div>
+          <div style={{ position: "relative", width: "300px", height: "300px", border: "0.5px groove white" }}>
+            <RemoteRenderView
+              client={client}
+              viewId="2"
+              crosslineColor={["green", "blue"]}
+              crosslinePositions={crosslinePositions}
+            />
+          </div>
+          <div style={{ position: "relative", width: "300px", height: "300px", border: "0.5px groove white" }}>
+            <RemoteRenderView
+              client={client}
+              viewId="3"
+              crosslineColor={["green", "red"]}
+              crosslinePositions={crosslinePositions}
+            />
+          </div>
+          <div style={{ position: "relative", width: "300px", height: "300px", border: "0.5px groove white" }}>
+            <RemoteRenderView
+              client={client}
+              viewId="4"
+              crosslineColor={["blue", "red"]}
+              crosslinePositions={crosslinePositions}
+            />
+          </div>
         </div>
       </Box>
     </Box>
+    // <ClientRenderingView />
   );
 }
 

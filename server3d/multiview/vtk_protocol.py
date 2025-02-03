@@ -14,7 +14,8 @@ vtkmath = vtk.vtkMath()
 
 class Viewer(vtk_protocols.vtkWebProtocol):
     def __init__(self):
-        self.dicomDirPath = "D:/javaworkspace/viewer-core/server3d/data/1.2.840.113704.9.1000.16.0.20240527133901371/1.2.840.113704.9.1000.16.1.2024052713392627100020002/data"
+        # self.dicomDirPath = "D:/javaworkspace/viewer-core/server3d/data/1.2.840.113704.9.1000.16.0.20240527133901371/1.2.840.113704.9.1000.16.1.2024052713392627100020002/data"
+        self.dicomDirPath = "D:/workingspace/viewer/be_project/viewer-core/server3d/src/data/1.2.840.113619.2.438.3.2831208971.408.1719531439.122/1.2.840.113619.2.438.3.2831208971.82.1719549666.218/data"
         self.colors = vtk.vtkNamedColors()
         self.reader = vtk.vtkDICOMImageReader()
 
@@ -281,7 +282,7 @@ class Viewer(vtk_protocols.vtkWebProtocol):
         self.gradientOpacity.AddPoint(0, 0)
         self.gradientOpacity.AddPoint(255, 1)
 
-    @exportRpc("volume.initialize")
+    @exportRpc("volume.create")
     def createVisualization(self) -> None:
         renderWindowAxial = self.getApplication().GetObjectIdMap().GetActiveObject("AXIAL_VIEW")
         renderWindowCoronal = self.getApplication().GetObjectIdMap().GetActiveObject("CORONAL_VIEW")

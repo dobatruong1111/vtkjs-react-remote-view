@@ -147,3 +147,45 @@ class CrossInteractorStyle_2(DefaultInteractorStyle):
             x, y, z = self.viewer.get_coordinate_cursor(mouse_x, mouse_y, self.orientation, self.picker)
             self.viewer.SetCrossFocalPoint([x, y, z])
             self.viewer.UpdateRender()
+
+class RotateInteractorStyle(vtk.vtkInteractorStyle):
+    def __init__(self) -> None:
+        super().__init__()
+        self.rotate = False
+
+        self.AddObserver(vtk.vtkCommand.LeftButtonPressEvent, self.onLeftPress)
+        self.AddObserver(vtk.vtkCommand.MouseMoveEvent, self.onMove)
+        self.AddObserver(vtk.vtkCommand.LeftButtonReleaseEvent, self.onLeftRelease)
+
+    def onLeftPress(self, obj: vtk.vtkInteractorStyle, event: str) -> None:
+        self.rotate = True
+        self.StartRotate()
+
+    def onMove(self, obj: vtk.vtkInteractorStyle, event: str) -> None:
+        if self.rotate:
+            last_position = obj.GetInteractor().GetLastEventPosition()
+            position = obj.GetInteractor().GetEventPosition()
+            dx = position[0] - last_position[0]
+            dy = position[1] - last_position[1]
+
+            size = obj.GetInteractor().GetRenderWindow().GetSize()
+
+            delta_elevation = -20.0 / size[1]
+            delta_azimuth = -20.0 / size[0]
+
+            MotionFactor = 10.0
+            rxf = dx * delta_azimuth * MotionFactor
+            ryf = dy * delta_elevation * MotionFactor
+
+            renderer = obj.GetInteractor().GetRenderWindow().GetRenderers().GetFirstRenderer()
+            camera = renderer.GetActiveCamera()
+            camera.Azimuth(rxf)
+            camera.Elevation(ryf)
+            # Update view up
+            camera.OrthogonalizeViewUp()
+
+            self.OnLeftButtonDown()
+
+    def onLeftRelease(self, obj: vtk.vtkInteractorStyle, event: str) -> None:
+        self.rotate = False
+        self.EndRotate()

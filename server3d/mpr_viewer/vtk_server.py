@@ -6,6 +6,7 @@ import vtk
 
 from vtk_protocol import VtkCone
 from endo_viewer import EndoscopyInteractorStyle
+from styles import RotateInteractorStyle
 
 class _Server(vtk_wslink.ServerProtocol):
     authKey = "wslink-secret"
@@ -36,7 +37,9 @@ class _Server(vtk_wslink.ServerProtocol):
             renderer_volume = vtk.vtkRenderer()
             render_window_volume.AddRenderer(renderer_volume)
             interactor_volume = vtk.vtkRenderWindowInteractor()
-            style = EndoscopyInteractorStyle()
+            # style = vtk.vtkInteractorStyle()
+            style = RotateInteractorStyle()
+            # style = vtk.vtkInteractorStyleTrackballCamera()
             interactor_volume.SetInteractorStyle(style)
             render_window_volume.SetInteractor(interactor_volume)
             self.getApplication().GetObjectIdMap().SetActiveObject("VOLUME_VIEW", render_window_volume)
