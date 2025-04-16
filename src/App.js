@@ -89,6 +89,10 @@ function App() {
             }}
           >
             <MenuItem onClick={() => {
+              wslink.activeRotate(context.current);
+              handleCloseRotate();
+            }}>Rotate</MenuItem>
+            <MenuItem onClick={() => {
               wslink.changeViewingAngle(context.current, "ANTERIOR");
               handleCloseRotate();
             }}>ANTERIOR</MenuItem>
