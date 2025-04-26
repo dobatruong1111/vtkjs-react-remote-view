@@ -37,6 +37,7 @@ function App() {
   const handleClosePreset = () => setAnchorElPreset(null);
 
   useEffect(() => {
+    // Ket noi websocket toi 3d-server thong qua viewer-server
     // axios.post("http://localhost:8888/ws/rest/v1/session3d/websocketlink",
     //   {
     //     session2D: "3dcc5814-942b-431d-8595-035c3b1f26d4",
@@ -52,6 +53,7 @@ function App() {
     // }).catch(function (error) {
     //   console.log("error: ", error);
     // })
+    // Ket noi websocket toi 3d-server
     const wsURL = "ws://localhost:1234/ws";
     console.log(`Connect to ${wsURL}`);
     wslink.connect(context.current, setClient, setBusy, wsURL);
